@@ -174,20 +174,6 @@ for S = [0.8*Scrit, 1.2*Scrit]
     end
 end
 
-% A small tumour should grow or shrink at rate lambda_3 = rH(E*) - d
-figure(7); hold on
-Ssmall = [0.8 1.2]*Scrit;  c = {'b', 'r'};
-for k = 1:2
-    S = Ssmall(k);  lam3 = r*H(Estar(S)) - dT;
-    [t, y] = ode45(@(t,y) model(t,y,S), [0 40], atSS(S, 1e3), opts);
-    plot(t, y(:,3)/1e3, c{k}, 'LineWidth', 2.5);
-    plot(t, exp(lam3*t), 'k--', 'LineWidth', 1.5, 'HandleVisibility', 'off');
-end
-set(gca, 'YScale', 'log');
-xlabel('Time (days)'); ylabel('N(t) / N(0)');
-title('Small tumour vs predicted rate e^{\lambda_3 t} (dashed)');
-legend('S = 0.8 S_{crit}', 'S = 1.2 S_{crit}', 'Location', 'northwest'); grid on; box on;
-
 % 3.3 and 3.4: find S_crit where a small tumour neither grows nor shrinks
 Scrit_ode = fzero(@(S) growthRate(model, S, atSS(S, 1e3), 50, opts), [0.5 1.5]*Scrit);
 [~, y]    = ode45(@(t,y) model(t,y,Scrit_ode), [0 10], y0, opts);
@@ -195,7 +181,7 @@ fprintf('\n3.3 E_crit: ODE %.4f vs formula %.4f nM\n', y(end,2), Ecrit);
 fprintf('3.4 S_crit: ODE %.2f vs formula %.2f mg/day\n', Scrit_ode, Scrit);
 
 %% 9. SAVE ALL FIGURES (optional)
-for k = 1:7, saveas(figure(k), sprintf('Fig%d.png', k)); end
+for k = 1:6, saveas(figure(k), sprintf('Fig%d.png', k)); end
 
 %% LOCAL FUNCTION
 function g = growthRate(model, S, yStart, T, opts)
